@@ -1,5 +1,5 @@
 import React from "react";
-import {BrowserRouter, Route, Switch} from "react-router-dom";
+import {BrowserRouter, Route, Switch, Redirect} from "react-router-dom";
 import Home from "./pages/home/Home";
 import Login from "./pages/login/Login";
 import SignUp from "./pages/signup/SignUp";
@@ -8,17 +8,26 @@ import {useAuthContext} from "./hooks/useAuthContext";
 
 
 function App() {
-    const { authIsReady } = useAuthContext()
-  return (
+    const { authIsReady,user } = useAuthContext()
 
+  return (
     <div className="App">
         {authIsReady && (
         <BrowserRouter>
             <Navbar/>
           <Switch>
-            <Route exact  path={'/'} component={Home}/>
-            <Route path={'/login'} component={Login}/>
-            <Route path={'/signup'} component={SignUp}/>
+              <Route exact  path={'/'}>
+                  {!user &&  <Redirect to ="/login"/>}
+                  {user &&<Home/>}
+              </Route>
+              <Route path={'/login'}>
+                  {user && <Redirect to="/"/>}
+                  {!user && <Login/>}
+              </Route>
+              <Route path={'/signup'}>
+                  {user && <Redirect to={"/"}/>}
+                  {!user && <SignUp/>}
+              </Route>
           </Switch>
         </BrowserRouter>
         )}
